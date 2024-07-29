@@ -179,8 +179,9 @@ void State_Trotting::calcTau(){
     _dWbd(1) = saturation(_dWbd(1), Vec2(-40, 40));
     _dWbd(2) = saturation(_dWbd(2), Vec2(-10, 10));
 
-    _forceFeetGlobal = - _balCtrl->calF(_ddPcd, _dWbd, _B2G_RotMat, _posFeet2BGlobal, *_contact);
-
+    // _forceFeetGlobal = - _balCtrl->calF(_ddPcd, _dWbd, _B2G_RotMat, _posFeet2BGlobal, *_contact);
+    _forceFeetGlobal = - _balCtrl->calF_mpc(_B2G_RotMat, _posFeet2BGlobal, *_contact);
+    
     for(int i(0); i<4; ++i){
         if((*_contact)(i) == 0){
             _forceFeetGlobal.col(i) = _KpSwing*(_posFeetGlobalGoal.col(i) - _posFeetGlobal.col(i)) + _KdSwing*(_velFeetGlobalGoal.col(i)-_velFeetGlobal.col(i));

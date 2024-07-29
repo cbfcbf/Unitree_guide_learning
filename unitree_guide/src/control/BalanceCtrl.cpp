@@ -4,6 +4,7 @@
 #include "control/BalanceCtrl.h"
 #include "common/mathTools.h"
 #include "common/timeMarker.h"
+#include "BalanceCtrl.h"
 
 BalanceCtrl::BalanceCtrl(double mass, Mat3 Ib, Mat6 S, double alpha, double beta)
             : _mass(mass), _Ib(Ib), _S(S), _alpha(alpha), _beta(beta){
@@ -58,6 +59,12 @@ Vec34 BalanceCtrl::calF(Vec3 ddPcd, Vec3 dWbd, RotMat rotM, Vec34 feetPos2B, Vec
 
     _Fprev = _F;
     return vec12ToVec34(_F);
+}
+
+Vec34 BalanceCtrl::calF_mpc(RotMat rotM, Vec34 feetPos2B, VecInt4 contact)
+{
+
+    return Vec34();
 }
 
 void BalanceCtrl::calMatrixA(Vec34 feetPos2B, RotMat rotM, VecInt4 contact){
@@ -151,4 +158,16 @@ void BalanceCtrl::solveQP(){
     for (int i = 0; i < n; ++i) {
         _F[i] = x[i];
     }
+}
+
+void BalanceCtrl::calMatrixA_mpc(Vec34 feetPos2B, RotMat rotM, VecInt4 contact)
+{
+    for(int i(0); i < 4; ++i){
+        _A.block(0, 3*i, 3, 3) = I3 * dt/m;
+        _A.block(3, 3*i, 3, 3) = skew(feetPos2B.col(i) - rotM*_pcb);
+    }
+}
+
+void BalanceCtrl::calMatrixB_mpc(Vec34 feetPos2B, RotMat rotM, VecInt4 contact)
+{
 }

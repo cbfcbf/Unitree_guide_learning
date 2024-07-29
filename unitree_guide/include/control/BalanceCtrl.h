@@ -17,6 +17,8 @@ public:
     BalanceCtrl(double mass, Mat3 Ib, Mat6 S, double alpha, double beta);
     BalanceCtrl(QuadrupedRobot *robModel);
     Vec34 calF(Vec3 ddPcd, Vec3 dWbd, RotMat rotM, Vec34 feetPos2B, VecInt4 contact);
+    Vec34 calF_mpc(RotMat rotM, Vec34 feetPos2B, VecInt4 contact);
+
 #ifdef COMPILE_DEBUG
     void setPyPlot(PyPlot *plot){_testPlot = plot;}
 #endif  // COMPILE_DEBUG
@@ -42,6 +44,12 @@ private:
     quadprogpp::Matrix<double> G, CE, CI;
     quadprogpp::Vector<double> g0, ce0, ci0, x;
 
+
+    //mpc controller AB完全不同 参加MIT Mini-Cheetah论文
+    Eigen::Matrix<double, 12 , 12> _A_mpc;
+    Eigen::Matrix<double, 12 , 12> _B_mpc;
+    void calMatrixA_mpc(Vec34 feetPos2B, RotMat rotM, VecInt4 contact);
+    void calMatrixB_mpc(Vec34 feetPos2B, RotMat rotM, VecInt4 contact);
 #ifdef COMPILE_DEBUG
     PyPlot *_testPlot;
 #endif  // COMPILE_DEBUG
